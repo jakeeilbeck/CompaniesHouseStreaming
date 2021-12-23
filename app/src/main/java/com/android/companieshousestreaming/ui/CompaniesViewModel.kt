@@ -10,19 +10,23 @@ import javax.inject.Inject
 @HiltViewModel
 class CompaniesViewModel @Inject constructor(
     private val repository: Repository,
-    ): ViewModel() {
+) : ViewModel() {
 
     val companyList = repository.companiesListMutableState.asReversed()
     var connectionStatus = repository.connectionStatus
 
     init {
+        getStream()
+    }
+
+    fun getStream(){
         viewModelScope.launch {
             repository.getStream()
         }
     }
 }
 
-sealed class StreamConnectionStatus(var status: String){
+sealed class StreamConnectionStatus(var status: String) {
     object Connecting : StreamConnectionStatus("Connecting to stream")
     object Successful : StreamConnectionStatus("Successfully connected to stream")
     object ResponseNull : StreamConnectionStatus("Response was null")
