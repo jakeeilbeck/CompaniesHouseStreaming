@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/streamFragment">
+
+    <fragment
+        android:id="@+id/streamFragment"
+        android:name="com.android.companieshousestreaming.ui.stream.StreamFragment"
+        android:label="StreamFragment" >
+        <action
+            android:id="@+id/action_streamFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@android:anim/slide_in_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.android.companieshousestreaming.ui.detail.DetailFragment"
+        android:label="DetailFragment" />
+</navigation>

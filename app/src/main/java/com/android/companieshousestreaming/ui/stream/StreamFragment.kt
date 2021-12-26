@@ -1,10 +1,11 @@
-package com.android.companieshousestreaming.ui
+package com.android.companieshousestreaming.ui.stream
 
 import android.os.Bundle
 import android.view.View
 import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,20 +15,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import com.android.companieshousestreaming.R
 import com.android.companieshousestreaming.databinding.FragmentStreamBinding
 import com.android.companieshousestreaming.models.JsonResponse
+import com.android.companieshousestreaming.ui.CompaniesViewModel
+import com.android.companieshousestreaming.ui.StreamConnectionStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class StreamFragment : Fragment(R.layout.fragment_stream) {
 
     private lateinit var binding: FragmentStreamBinding
-    private val companiesViewModel: CompaniesViewModel by viewModels()
+    private val companiesViewModel: CompaniesViewModel by activityViewModels()
 
     @OptIn(
         ExperimentalFoundationApi::class,
@@ -61,7 +66,15 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                         }
 
                         items(companyList) { company ->
-                            ListItem(company = company)
+                            ListItem(
+                                company = company,
+                                itemClick = {
+                                    companiesViewModel.selectedCompany = it
+                                    view.findNavController().navigate(
+                                            StreamFragmentDirections.actionStreamFragmentToDetailFragment()
+                                        )
+                                },
+                            )
                         }
                     }
                 }
@@ -74,36 +87,23 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
 fun ListItem(
     modifier: Modifier = Modifier,
     company: JsonResponse,
+    itemClick: (JsonResponse) -> Unit,
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = 2.dp
+            .padding(8.dp)
+            .clickable { itemClick(company) },
+        elevation = 2.dp,
     ) {
         Column(
             modifier = modifier
                 .padding(8.dp)
         ) {
-            Text(text = company.data?.companyName ?: "")
-
-            var previousCompanyNames = ""
-            company.data?.previousCompanyNames?.forEach {
-                previousCompanyNames += "${it?.name} | "
-            }
-            Text(text = previousCompanyNames)
+            Text(text = company.data?.companyName ?: "", fontWeight = FontWeight.SemiBold)
+            Text(text = "Previous Company Names: ${company.data?.previousCompanyNames?.size ?: 0}")
+            Text(text = "Year Started Trading: ${company.data?.dateOfCreation?.substring(0,4)}")
             Text(text = company.data?.branchCompanyDetails?.businessActivity ?: "")
-            Row(
-                modifier = modifier
-                    .padding(8.dp)
-            ) {
-                Text(text = company.data?.dateOfCreation.toString())
-                if (company.data?.dateOfCessation.isNullOrBlank()) {
-                    Text(text = "..continuing")
-                } else {
-                    Text(text = company.data?.dateOfCessation.toString())
-                }
-            }
         }
     }
 }
