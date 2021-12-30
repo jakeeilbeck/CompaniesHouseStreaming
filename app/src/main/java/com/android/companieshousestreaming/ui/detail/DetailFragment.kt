@@ -1,7 +1,10 @@
 package com.android.companieshousestreaming.ui.detail
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Card
@@ -11,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -76,7 +80,63 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
                                 )
                             }
                         }
+                        item {
+                            val links = listOf(
+                                Pair("Company", selectedCompany?.data?.links?.self),
+                                Pair("Registers", selectedCompany?.data?.links?.registers),
+                                Pair(
+                                    "Persons With Significant Control",
+                                    selectedCompany?.data?.links?.personsWithSignificantControl
+                                ),
+                                Pair(
+                                    "Persons With Significant Control Statements",
+                                    selectedCompany?.data?.links?.personsWithSignificantControlStatements
+                                ),
+                                Pair("Officers", selectedCompany?.data?.links?.officers),
+                                Pair("Filing History", selectedCompany?.data?.links?.filingHistory)
+                            )
+
+                            InfoItemLinks(
+                                heading = "Links",
+                                infoList = links,
+                                itemClick = { openLinkIntent(it) }
+                            )
+                        }
                     }
+                }
+            }
+        }
+    }
+
+    private fun openLinkIntent(url: String) {
+        val fullLink = "https://find-and-update.company-information.service.gov.uk$url"
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(fullLink)))
+    }
+}
+
+@Composable
+fun InfoItemLinks(
+    modifier: Modifier = Modifier,
+    heading: String,
+    infoList: List<Pair<String, String?>>,
+    itemClick: (String) -> Unit,
+) {
+    Card(
+        modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
+        elevation = 2.dp,
+    ) {
+        Column {
+            Heading(text = heading)
+            infoList.forEach {
+                if (!it.second.isNullOrBlank()) {
+                    InfoRow(
+                        modifier = modifier.clickable { itemClick(it.second!!) },
+                        heading = it.first,
+                        info = "find-and-update.company-information.service.gov.uk${it.second}",
+                        isLink = true,
+                    )
                 }
             }
         }
@@ -99,13 +159,14 @@ fun InfoItem(
             if (infoList.size > 1){
                 Heading(text = heading)
                 infoList.forEach {
-                    Info(text = it)
+                    Info(text = it, isLink = false)
                 }
             } else {
                 infoList.forEach {
                     InfoRow(
                         heading = heading,
-                        info = it
+                        info = it,
+                        isLink = false,
                     )
                 }
             }
@@ -118,12 +179,13 @@ fun InfoRow(
     modifier: Modifier = Modifier,
     heading: String,
     info: String,
-){
+    isLink: Boolean,
+) {
     Column(
         modifier
     ) {
         Heading(text = heading)
-        Info(text = info)
+        Info(text = info, isLink = isLink)
     }
 }
 
@@ -145,10 +207,21 @@ fun Heading(
 fun Info(
     modifier: Modifier = Modifier,
     text: String,
-){
-    Text(
-        text = text,
-        modifier
-            .padding(8.dp)
-    )
+    isLink: Boolean,
+) {
+    if (isLink) {
+        Text(
+            text = text,
+            modifier = modifier
+                .padding(8.dp),
+            color = androidx.compose.ui.graphics.Color.Blue,
+            textDecoration = TextDecoration.Underline,
+        )
+    } else {
+        Text(
+            text = text,
+            modifier
+                .padding(8.dp)
+        )
+    }
 }
