@@ -1,8 +1,8 @@
 package com.android.companieshousestreaming.data
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.android.companieshousestreaming.BuildConfig
 import com.android.companieshousestreaming.ui.StreamConnectionStatus
 import com.android.companieshousestreaming.models.JsonResponse
 import okhttp3.ResponseBody
@@ -25,9 +25,11 @@ class Repository @Inject constructor(
     var connectionStatus = mutableStateOf<StreamConnectionStatus?>(StreamConnectionStatus.Idle)
     var companiesListMutableState = mutableStateListOf<JsonResponse>()
     private var companiesStream: Call<ResponseBody>? = null
+    private val streamingKey = BuildConfig.STREAMING_KEY
+    private val restKey = BuildConfig.REST_KEY
 
     fun getStream() {
-        companiesStream = service.getStream("Hk-gPF7eRYkP8N5NQOLrTJMRnFk8anorwI7iLXrP")
+        companiesStream = service.getStream(streamingKey)
         companiesStream?.enqueue(streamResponse)
 
         connectionStatus.value = StreamConnectionStatus.Connecting
@@ -49,8 +51,6 @@ class Repository @Inject constructor(
                             while (true) {
                                 val j = gson.fromJson<JsonObject>(reader, JsonObject::class.java)
 
-                                Log.i("azazCompaniesViewModel", "JSON: $j")
-
                                 if (j.getAsJsonObject("data") != null) {
                                     val company = gson.fromJson(j, JsonResponse::class.java)
                                     companiesListMutableState.add(company)
@@ -60,7 +60,6 @@ class Repository @Inject constructor(
                                 }
                             }
                         } catch (e: Exception) {
-                            Log.i("azazCompaniesViewModel", "ERROR : ${e.message}")
                             connectionStatus.value = StreamConnectionStatus.Error
                         }
                     }
@@ -71,7 +70,6 @@ class Repository @Inject constructor(
         }
 
         override fun onFailure(call: Call<ResponseBody?>?, t: Throwable?) {
-            Log.i("azazCompaniesViewModel", "onFailure ${t?.printStackTrace()}")
             connectionStatus.value = StreamConnectionStatus.Failed
         }
     }

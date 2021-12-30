@@ -15,7 +15,3 @@ interface RetrofitService {
         const val BASE_URL = "https://stream.companieshouse.gov.uk/"
     }
 }
-
-//curl -v -u Hk-gPF7eRYkP8N5NQOLrTJMRnFk8anorwI7iLXrP: "https://stream.companieshouse.gov.uk/companies"
-//curl -v -u 39jvHc8UnL3z2KQr0oXM43-DBkrumHLWhqqCt7DZ: "https://stream.companieshouse.gov.uk/companies"
-//curl -v -u 39jvHc8UnL3z2KQr0oXM43-DBkrumHLWhqqCt7DZ: "https://stream.company-information.service.gov.uk/companies"
