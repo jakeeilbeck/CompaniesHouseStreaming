@@ -71,8 +71,8 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                                 itemClick = {
                                     companiesViewModel.selectedCompany = it
                                     view.findNavController().navigate(
-                                            StreamFragmentDirections.actionStreamFragmentToDetailFragment()
-                                        )
+                                        StreamFragmentDirections.actionStreamFragmentToDetailFragment()
+                                    )
                                 },
                             )
                         }
@@ -102,7 +102,7 @@ fun ListItem(
         ) {
             Text(text = company.data?.companyName ?: "", fontWeight = FontWeight.SemiBold)
             Text(text = "Previous Company Names: ${company.data?.previousCompanyNames?.size ?: 0}")
-            Text(text = "Year Started Trading: ${company.data?.dateOfCreation?.substring(0,4)}")
+            Text(text = "Year Started Trading: ${company.data?.dateOfCreation?.substring(0, 4)}")
             Text(text = company.data?.branchCompanyDetails?.businessActivity ?: "")
         }
     }
@@ -158,7 +158,7 @@ fun RetryButton(
     modifier: Modifier = Modifier,
     connectionStatus: String?,
     retryClick: () -> Unit,
-){
+) {
     AnimatedVisibility(
         visible = connectionStatus == StreamConnectionStatus.Unsuccessful.status ||
                 connectionStatus == StreamConnectionStatus.Error.status ||

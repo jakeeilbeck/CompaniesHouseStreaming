@@ -39,7 +39,7 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme {
-                    LazyColumn{
+                    LazyColumn {
                         item {
                             InfoItem(
                                 heading = "Company Name",
@@ -58,22 +58,22 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
                                 )
                             }
                         }
-                        item{
+                        item {
                             InfoItem(
                                 heading = "Company Number",
                                 infoList = listOf(selectedCompany?.data?.companyNumber.toString())
                             )
                         }
-                        item{
+                        item {
                             InfoItem(
                                 heading = "Trading Dates",
                                 infoList = listOf(
-                                    "From ${selectedCompany?.data?.dateOfCreation.toString()} to ${ selectedCompany?.data?.dateOfCessation?: "current"}"
+                                    "From ${selectedCompany?.data?.dateOfCreation.toString()} to ${selectedCompany?.data?.dateOfCessation ?: "current"}"
                                 )
                             )
                         }
-                        item{
-                            if(!selectedCompany?.data?.registeredOfficeAddress?.region.isNullOrBlank()){
+                        item {
+                            if (!selectedCompany?.data?.registeredOfficeAddress?.region.isNullOrBlank()) {
                                 InfoItem(
                                     heading = "Registered Office Region",
                                     infoList = listOf(selectedCompany?.data?.registeredOfficeAddress?.region.toString())
@@ -156,7 +156,7 @@ fun InfoItem(
         elevation = 2.dp,
     ) {
         Column {
-            if (infoList.size > 1){
+            if (infoList.size > 1) {
                 Heading(text = heading)
                 infoList.forEach {
                     Info(text = it, isLink = false)
@@ -193,13 +193,13 @@ fun InfoRow(
 fun Heading(
     modifier: Modifier = Modifier,
     text: String,
-){
+) {
 
     Text(
         text = text,
         modifier
             .padding(8.dp),
-     fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Bold,
     )
 }
 
