@@ -81,6 +81,11 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        companiesViewModel.getStream()
+    }
 }
 
 @Composable

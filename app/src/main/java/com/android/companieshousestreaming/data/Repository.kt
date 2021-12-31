@@ -3,8 +3,10 @@ package com.android.companieshousestreaming.data
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.android.companieshousestreaming.BuildConfig
+import com.android.companieshousestreaming.di.AppModule
 import com.android.companieshousestreaming.ui.StreamConnectionStatus
 import com.android.companieshousestreaming.models.JsonResponse
+import com.android.companieshousestreaming.models.SearchResult
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -19,7 +21,8 @@ import javax.inject.Singleton
 
 @Singleton
 class Repository @Inject constructor(
-    private val service: RetrofitService,
+    @AppModule.RetrofitStream private val streamingService: RetrofitService,
+    @AppModule.RetrofitRest private val restService: RetrofitService,
 ) {
 
     var connectionStatus = mutableStateOf<StreamConnectionStatus?>(StreamConnectionStatus.Idle)
@@ -29,7 +32,7 @@ class Repository @Inject constructor(
     private val restKey = BuildConfig.REST_KEY
 
     fun getStream() {
-        companiesStream = service.getStream(streamingKey)
+        companiesStream = streamingService.getStream(streamingKey)
         companiesStream?.enqueue(streamResponse)
 
         connectionStatus.value = StreamConnectionStatus.Connecting
@@ -72,5 +75,9 @@ class Repository @Inject constructor(
         override fun onFailure(call: Call<ResponseBody?>?, t: Throwable?) {
             connectionStatus.value = StreamConnectionStatus.Failed
         }
+    }
+
+    suspend fun getSearchResults(query: String): SearchResult{
+        return restService.searchCompanies(restKey, query, "50", "1")
     }
 }

@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -18,19 +19,35 @@ import javax.inject.Singleton
 object AppModule {
 
     //Retrofit dependencies
-    @Provides
-    @Singleton
-    fun provideRetrofitService(retrofit: Retrofit): RetrofitService =
-        retrofit.create(RetrofitService::class.java)
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class RetrofitStream
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class RetrofitRest
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson): Retrofit =
+    @RetrofitStream
+    fun provideRetrofitStream(okHttpClient: OkHttpClient, gson: Gson): RetrofitService =
         Retrofit.Builder()
-            .baseUrl(RetrofitService.BASE_URL)
+            .baseUrl(RetrofitService.STREAM_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
+            .create(RetrofitService::class.java)
+
+    @Provides
+    @Singleton
+    @RetrofitRest
+    fun provideRetrofitRest(okHttpClient: OkHttpClient, gson: Gson): RetrofitService =
+        Retrofit.Builder()
+            .baseUrl(RetrofitService.REST_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(okHttpClient)
+            .build()
+            .create(RetrofitService::class.java)
 
     @Provides
     @Singleton
