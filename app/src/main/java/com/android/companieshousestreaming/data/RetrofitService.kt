@@ -33,7 +33,3 @@ interface RetrofitService {
         const val REST_BASE_URL = "https://api.company-information.service.gov.uk/"
     }
 }
-
-//curl -v -u dd97fb58-7d2e-4d64-acd5-eead59d30b02: "https://stream.companieshouse.gov.uk/companies"
-//curl -XGET -u df4bcd93-336a-4352-93fe-9ac7187edb4e: "https://api.company-information.service.gov.uk/company/00000006"
-//curl -XGET -u df4bcd93-336a-4352-93fe-9ac7187edb4e: "https://api.company-information.service.gov.uk/search/companies?q=pig"

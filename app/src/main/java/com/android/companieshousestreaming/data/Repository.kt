@@ -81,4 +81,8 @@ class Repository @Inject constructor(
     suspend fun getSearchResults(query: String): SearchResultList {
         return restService.searchCompanies(restKey, query, "50", "1")
     }
+
+    suspend fun searchCompany(companyNumber: String): SearchResultCompany? {
+        return restService.getCompany(restKey, companyNumber)
+    }
 }
