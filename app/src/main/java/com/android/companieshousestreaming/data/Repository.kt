@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.android.companieshousestreaming.BuildConfig
 import com.android.companieshousestreaming.di.AppModule
 import com.android.companieshousestreaming.ui.StreamConnectionStatus
-import com.android.companieshousestreaming.models.JsonResponse
-import com.android.companieshousestreaming.models.SearchResult
+import com.android.companieshousestreaming.models.StreamResponse
+import com.android.companieshousestreaming.models.SearchResultList
+import com.android.companieshousestreaming.models.SearchResultCompany
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,7 +27,7 @@ class Repository @Inject constructor(
 ) {
 
     var connectionStatus = mutableStateOf<StreamConnectionStatus?>(StreamConnectionStatus.Idle)
-    var companiesListMutableState = mutableStateListOf<JsonResponse>()
+    var companiesListMutableState = mutableStateListOf<StreamResponse>()
     private var companiesStream: Call<ResponseBody>? = null
     private val streamingKey = BuildConfig.STREAMING_KEY
     private val restKey = BuildConfig.REST_KEY
@@ -55,7 +56,7 @@ class Repository @Inject constructor(
                                 val j = gson.fromJson<JsonObject>(reader, JsonObject::class.java)
 
                                 if (j.getAsJsonObject("data") != null) {
-                                    val company = gson.fromJson(j, JsonResponse::class.java)
+                                    val company = gson.fromJson(j, StreamResponse::class.java)
                                     companiesListMutableState.add(company)
 
                                 } else {
@@ -77,7 +78,7 @@ class Repository @Inject constructor(
         }
     }
 
-    suspend fun getSearchResults(query: String): SearchResult{
+    suspend fun getSearchResults(query: String): SearchResultList {
         return restService.searchCompanies(restKey, query, "50", "1")
     }
 }

@@ -2,7 +2,7 @@ package com.android.companieshousestreaming.models
 
 import com.google.gson.annotations.SerializedName
 
-data class JsonResponse(
+data class StreamResponse(
     @SerializedName("data")
     val `data`: Data?,
     @SerializedName("event")

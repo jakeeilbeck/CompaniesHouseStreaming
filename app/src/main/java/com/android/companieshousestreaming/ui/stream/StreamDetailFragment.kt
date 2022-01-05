@@ -1,4 +1,4 @@
-package com.android.companieshousestreaming.ui.detail
+package com.android.companieshousestreaming.ui.stream
 
 import android.content.Intent
 import android.net.Uri
@@ -19,21 +19,21 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.android.companieshousestreaming.R
-import com.android.companieshousestreaming.databinding.FragmentDetailBinding
+import com.android.companieshousestreaming.databinding.FragmentStreamDetailBinding
 import com.android.companieshousestreaming.ui.CompaniesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DetailFragment : Fragment(R.layout.fragment_detail) {
+class DetailFragment : Fragment(R.layout.fragment_stream_detail) {
 
-    private lateinit var binding: FragmentDetailBinding
+    private lateinit var binding: FragmentStreamDetailBinding
     private val companiesViewModel: CompaniesViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentDetailBinding.bind(view)
+        binding = FragmentStreamDetailBinding.bind(view)
 
-        val selectedCompany = companiesViewModel.selectedCompany
+        val selectedCompany = companiesViewModel.streamSelectedCompany
 
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -68,7 +68,8 @@ class DetailFragment : Fragment(R.layout.fragment_detail) {
                             InfoItem(
                                 heading = "Trading Dates",
                                 infoList = listOf(
-                                    "From ${selectedCompany?.data?.dateOfCreation.toString()} to ${selectedCompany?.data?.dateOfCessation ?: "current"}"
+                                    "From ${selectedCompany?.data?.dateOfCreation.toString()} " +
+                                            "to ${selectedCompany?.data?.dateOfCessation ?: "current"}"
                                 )
                             )
                         }

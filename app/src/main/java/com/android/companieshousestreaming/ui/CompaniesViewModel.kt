@@ -1,14 +1,12 @@
 package com.android.companieshousestreaming.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.companieshousestreaming.data.Repository
-import com.android.companieshousestreaming.models.JsonResponse
-import com.android.companieshousestreaming.models.SearchResult
+import com.android.companieshousestreaming.models.StreamResponse
+import com.android.companieshousestreaming.models.SearchResultList
+import com.android.companieshousestreaming.models.SearchResultCompany
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,28 +16,38 @@ class CompaniesViewModel @Inject constructor(
     private val repository: Repository,
 ) : ViewModel() {
 
-    val companyList = repository.companiesListMutableState.asReversed()
-    var connectionStatus = repository.connectionStatus
-    var selectedCompany by mutableStateOf<JsonResponse?>(null)
-    var searchedCompanies = mutableStateListOf<SearchResult.Item?>()
+    val streamList = repository.companiesListMutableState.asReversed()
+    var streamConnectionStatus = repository.connectionStatus
+    var streamSelectedCompany by mutableStateOf<StreamResponse?>(null)
+    var searchList = mutableStateListOf<SearchResultList.Item?>()
     var searchQuery = mutableStateOf("")
+    var searchSelectedCompany by mutableStateOf<SearchResultCompany?>(null)
+    private val companiesStream = viewModelScope.launch { repository.getStream() }
 
-    fun getStream(){
-        viewModelScope.launch {
-            repository.getStream()
-        }
+    fun startStream() {
+        companiesStream.start()
     }
 
-    fun getSearchResults(query: String){
+    fun stopStream() {
+        companiesStream.cancel()
+    }
+
+    fun getSearchResults(query: String) {
         viewModelScope.launch {
-            searchedCompanies.clear()
+            searchList.clear()
             repository.getSearchResults(query).items?.let {
-                searchedCompanies.addAll(
+                searchList.addAll(
                     it
                 )
             }
         }
         searchQuery.value = query
+    }
+
+    fun searchCompany(companyNumber: String) {
+        viewModelScope.launch {
+            searchSelectedCompany = repository.searchCompany(companyNumber)
+        }
     }
 }
 

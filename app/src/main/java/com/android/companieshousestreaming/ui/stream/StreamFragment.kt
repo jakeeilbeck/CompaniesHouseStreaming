@@ -23,7 +23,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import com.android.companieshousestreaming.R
 import com.android.companieshousestreaming.databinding.FragmentStreamBinding
-import com.android.companieshousestreaming.models.JsonResponse
+import com.android.companieshousestreaming.models.StreamResponse
 import com.android.companieshousestreaming.ui.CompaniesViewModel
 import com.android.companieshousestreaming.ui.StreamConnectionStatus
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,30 +46,27 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
 
-                val companyList = companiesViewModel.companyList
-                val connectionStatus = companiesViewModel.connectionStatus
+                val companyList = companiesViewModel.streamList
+                val connectionStatus = companiesViewModel.streamConnectionStatus
 
                 MaterialTheme {
                     LazyColumn {
-
                         stickyHeader {
                             ConnectionStatusMessage(
                                 connectionStatus = connectionStatus.value?.status
                             )
                         }
-
                         item {
                             RetryButton(
                                 connectionStatus = connectionStatus.value?.status,
-                                retryClick = { companiesViewModel.getStream() },
+                                retryClick = { companiesViewModel.startStream() },
                             )
                         }
-
                         items(companyList) { company ->
                             ListItem(
                                 company = company,
                                 itemClick = {
-                                    companiesViewModel.selectedCompany = it
+                                    companiesViewModel.streamSelectedCompany = it
                                     view.findNavController().navigate(
                                         StreamFragmentDirections.actionStreamFragmentToDetailFragment()
                                     )
@@ -84,15 +81,20 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
 
     override fun onResume() {
         super.onResume()
-        companiesViewModel.getStream()
+        companiesViewModel.startStream()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        companiesViewModel.stopStream()
     }
 }
 
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
-    company: JsonResponse,
-    itemClick: (JsonResponse) -> Unit,
+    company: StreamResponse,
+    itemClick: (StreamResponse) -> Unit,
 ) {
     Card(
         modifier = modifier

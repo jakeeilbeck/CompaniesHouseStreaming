@@ -5,13 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -23,11 +23,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import com.android.companieshousestreaming.R
 import com.android.companieshousestreaming.databinding.FragmentSearchBinding
+import com.android.companieshousestreaming.models.SearchResultList
 import com.android.companieshousestreaming.ui.CompaniesViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,22 +52,25 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         binding.composeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-
                 MaterialTheme {
-
                     LazyColumn {
-
                         item {
                             SearchBar(
                                 search = { companiesViewModel.getSearchResults(it) },
                                 searchQuery = companiesViewModel.searchQuery
                             )
                         }
-
-                        items(companiesViewModel.searchedCompanies) { company ->
-                            Text(text = company?.title.toString())
+                        items(companiesViewModel.searchList) { company ->
+                            CompanySearchItem(
+                                company = company,
+                                selectedCompany = {
+                                    companiesViewModel.searchCompany(it)
+                                    view.findNavController().navigate(
+                                        SearchFragmentDirections.actionSearchFragmentToSearchedCompanyDetailFragment()
+                                    )
+                                }
+                            )
                         }
-
                     }
                 }
             }
@@ -107,5 +113,31 @@ fun SearchBar(
                 keyboardController?.hide()
             }),
         )
+    }
+}
+
+@Composable
+fun CompanySearchItem(
+    modifier: Modifier = Modifier,
+    company: SearchResultList.Item?,
+    selectedCompany: (String) -> Unit,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = 2.dp,
+    ) {
+        Column(
+            modifier = modifier
+                .padding(8.dp)
+                .clickable {
+                    selectedCompany(company?.companyNumber.toString())
+                }
+        ) {
+            Text(text = company?.title.toString(), fontWeight = FontWeight.SemiBold)
+            Text(text = "Year Started Trading: ${company?.dateOfCreation?.substring(0, 4)}")
+            Text(text = "Registered to: ${company?.addressSnippet}")
+        }
     }
 }

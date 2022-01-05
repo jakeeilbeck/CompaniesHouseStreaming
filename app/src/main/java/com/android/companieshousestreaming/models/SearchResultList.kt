@@ -1,9 +1,8 @@
 package com.android.companieshousestreaming.models
 
-
 import com.google.gson.annotations.SerializedName
 
-data class SearchResult(
+data class SearchResultList(
     @SerializedName("start_index")
     val startIndex: Int?,
     @SerializedName("kind")
