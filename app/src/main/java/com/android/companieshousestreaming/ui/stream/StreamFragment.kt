@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.android.companieshousestreaming.R
 import com.android.companieshousestreaming.databinding.FragmentStreamBinding
@@ -27,6 +28,7 @@ import com.android.companieshousestreaming.models.StreamResponse
 import com.android.companieshousestreaming.ui.CompaniesViewModel
 import com.android.companieshousestreaming.ui.StreamConnectionStatus
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class StreamFragment : Fragment(R.layout.fragment_stream) {
@@ -59,7 +61,7 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
                         item {
                             RetryButton(
                                 connectionStatus = connectionStatus.value?.status,
-                                retryClick = { companiesViewModel.startStream() },
+                                retryClick = { startStream() },
                             )
                         }
                         items(companyList) { company ->
@@ -81,7 +83,13 @@ class StreamFragment : Fragment(R.layout.fragment_stream) {
 
     override fun onResume() {
         super.onResume()
-        companiesViewModel.startStream()
+        startStream()
+    }
+
+    private fun startStream(){
+        lifecycleScope.launch {
+            companiesViewModel.startStream()
+        }
     }
 
     override fun onPause() {

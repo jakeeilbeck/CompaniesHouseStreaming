@@ -1,5 +1,6 @@
 package com.android.companieshousestreaming.di
 
+import com.android.companieshousestreaming.data.Repository
 import com.android.companieshousestreaming.data.RetrofitService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -17,6 +18,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+
+    @Provides
+    @Singleton
+    fun provideRepository(@RetrofitStream streamService: RetrofitService, @RetrofitRest restService: RetrofitService): Repository =
+        Repository(streamService, restService)
 
     //Retrofit dependencies
     @Qualifier

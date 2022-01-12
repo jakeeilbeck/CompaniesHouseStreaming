@@ -39,6 +39,10 @@ class Repository @Inject constructor(
         connectionStatus.value = StreamConnectionStatus.Connecting
     }
 
+    fun cancelStream(){
+        companiesStream?.cancel()
+    }
+
     private val streamResponse: Callback<ResponseBody> = object : Callback<ResponseBody> {
         override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
             if (response.isSuccessful) {

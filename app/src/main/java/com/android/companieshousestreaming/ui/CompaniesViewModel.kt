@@ -22,14 +22,14 @@ class CompaniesViewModel @Inject constructor(
     var searchList = mutableStateListOf<SearchResultList.Item?>()
     var searchQuery = mutableStateOf("")
     var searchSelectedCompany by mutableStateOf<SearchResultCompany?>(null)
-    private val companiesStream = viewModelScope.launch { repository.getStream() }
 
     fun startStream() {
-        companiesStream.start()
+        repository.getStream()
     }
 
     fun stopStream() {
-        companiesStream.cancel()
+        repository.cancelStream()
+        streamConnectionStatus.value = StreamConnectionStatus.Idle
     }
 
     fun getSearchResults(query: String) {
